@@ -1,0 +1,14 @@
+# IDE and cache files
+__pycache__/
+
+# Notebooks
+*.ipynb
+
+# Data files
+*.json
+
+# Virtual Environment
+venv/
+
+# Ignore the gitignore file itself (optional, but some do this)
+# .gitignore

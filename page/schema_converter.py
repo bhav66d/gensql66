@@ -327,10 +327,20 @@ def display_conversion_results():
             else:
                 st.warning("There is no schema to get suggestions for.")
 
+        # Dynamically generate the file name
+        file_name = "converted_schema.sql"  # Default name
+        if 'output_format' in st.session_state and 'uploaded_file' in st.session_state and st.session_state.uploaded_file:
+            output_format = st.session_state.output_format.replace(" ", "_")
+            original_file_name = st.session_state.uploaded_file.name.split(".")[0]
+            file_name = f"{output_format}_{original_file_name}.sql"
+        elif 'output_format' in st.session_state:
+            output_format = st.session_state.output_format.replace(" ", "_")
+            file_name = f"{output_format}_converted_schema.sql"
+
         st.download_button(
             label="Download Schema",
             data=st.session_state.get('converted_schema', ''),
-            file_name="converted_schema.sql",
+            file_name=file_name,
             mime="text/plain"
         )
         

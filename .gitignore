@@ -1,3 +1,5 @@
 *.json
 *.ipynb
 __pycache__/
+venv
+.gitignore

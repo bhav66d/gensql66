@@ -1,0 +1,8 @@
+streamlit
+pandas
+numpy
+faker
+openpyxl
+xlsxwriter
+xlrd
+google-genai

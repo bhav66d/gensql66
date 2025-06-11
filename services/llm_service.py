@@ -114,6 +114,7 @@ class LLMService:
                 cleaned_schema_content = self._clean_schema_response(response.text)
                 schema_with_dialect = f"{output_format}\n{cleaned_schema_content}"
                 
+
                 # Correctly unpack the 3 values from _validate_converted_schema
                 is_valid, validation_message, construct_counts = self._validate_converted_schema(schema_with_dialect)
                 # The line below is removed as construct_counts is now received from the validation:
@@ -244,8 +245,15 @@ class LLMService:
                 construct_counts[construct_name] = count # Use direct assignment
                 found_any_construct = True
         
-        if not found_any_construct and not schema_content.strip().startswith('--'): # if not just comments
-             return False, f"Validation Error (Dialect: {dialect}): No common SQL DDL/DML keywords (CREATE, INSERT, SELECT, etc.) detected.", construct_counts
+            if not found_any_construct and not schema_content.strip().startswith('--'):
+                return False, f"Validation Error (Dialect: {dialect}): No common SQL DDL/DML keywords (CREATE, INSERT, SELECT, etc.) detected.", construct_counts
+
+            # Add this block
+            if construct_counts.get('tables', 0) == 0:
+                return False, (
+                    f"Schema processed and standardized by AI. Schema (Dialect: {dialect}) passed basic checks, "
+                    f"but no CREATE TABLE statements were found. Further analysis cannot proceed without table definitions."
+                ), construct_counts
 
         # --- Further Checks (can be expanded) ---
 
@@ -284,19 +292,19 @@ class LLMService:
         
         try:
             improvement_prompt = f"""
-Analyze the following SQL schema and provide improvement suggestions:
+            Analyze the following SQL schema and provide improvement suggestions:
 
-{schema}
+            {schema}
 
-Please provide:
-1. Missing indexes that should be added
-2. Missing constraints or relationships
-3. Data type optimizations
-4. Naming convention improvements
-5. Performance optimization suggestions
+            Please provide:
+            1. Missing indexes that should be added
+            2. Missing constraints or relationships
+            3. Data type optimizations
+            4. Naming convention improvements
+            5. Performance optimization suggestions
 
-Keep suggestions concise and practical.
-"""
+            Keep suggestions concise and practical.
+            """
             
             response = self.client.models.generate_content(
                 model=model_config["model"],

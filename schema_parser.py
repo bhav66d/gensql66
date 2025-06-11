@@ -42,7 +42,8 @@ class SchemaParser:
             first_line_stripped = lines[0].strip()
             # Clean the first line from common comment markers for dialect detection
             # Handles "-- MySQL", "# MySQL", "/* MySQL */"
-            first_line_cleaned_for_dialect = re.sub(r"^[--#/\*\s]+|\s*[\*/]*$", "", first_line_stripped, flags=re.IGNORECASE)
+            #first_line_cleaned_for_dialect = re.sub(r"^[--#/\*\s]+|\s*[\*/]*$", "", first_line_stripped, flags=re.IGNORECASE)
+            first_line_cleaned_for_dialect = re.sub(r"^[-/#\*\s]+|\s*[\*/]*$", "", first_line_stripped, flags=re.IGNORECASE)
 
             for dialect_candidate in self.KNOWN_DIALECTS:
                 if first_line_cleaned_for_dialect.lower() == dialect_candidate.lower():

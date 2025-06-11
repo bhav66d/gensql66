@@ -238,12 +238,20 @@ def schema_generation_flow():
             
             if success and normalized_schema_with_dialect:
                 st.success(f"Schema processed and standardized by AI. {validation_msg}")
-                # The normalized_schema_with_dialect should have the dialect as the first line as per prompt
                 process_schema(normalized_schema_with_dialect, st.session_state.get('num_samples', 1000))
             else:
-                st.error(f"AI schema processing failed: {validation_msg or 'Unknown error during AI processing.'}. "
-                         "Attempting to parse the original schema directly. Please ensure it's well-formed.")
-                process_schema(schema_content_raw, st.session_state.get('num_samples', 1000))
+                if "no create table" in validation_msg.lower():
+                    # Show only this info and STOP
+                    st.info("The uploaded schema does not contain any CREATE TABLE statements. "
+                            "Further processing has been skipped. Please upload a valid schema with table definitions.")
+                    return  # Prevent further error messages and process_schema()
+                else:
+                    # Normal fallback behavior
+                    st.error(f"AI schema processing failed: {validation_msg or 'Unknown error during AI processing.'}. "
+                            "Attempting to parse the original schema directly. Please ensure it's well-formed.")
+                    process_schema(schema_content_raw, st.session_state.get('num_samples', 1000))
+
+
         else:
             st.warning("No dialect specified on the first line, and LLM Service is not available/configured. "
                        "Attempting to parse the original schema directly. "

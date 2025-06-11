@@ -165,7 +165,8 @@ class DataAnalyzer:
             numeric_series = series
         
         # Check if it's integer-like
-        is_integer = all(x.is_integer() for x in numeric_series if pd.notna(x) and isinstance(x, (int, float)))
+        #is_integer = all(x.is_integer() for x in numeric_series if pd.notna(x) and isinstance(x, (int, float)))
+        is_integer = all(x.is_integer() if isinstance(x, float) else isinstance(x, int) for x in numeric_series if pd.notna(x))
         
         stats = {
             'min': float(numeric_series.min()),
